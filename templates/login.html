@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language Example</title>
+</head>
+<body>
+    <h1>
+        {% if lang == 'en' %}
+            Hello, welcome to our website!
+        {% elif lang == 'es' %}
+            ¡Hola, bienvenido a nuestro sitio web!
+        {% elif lang == 'fr' %}
+            Bonjour, bienvenue sur notre site Web!
+        {% endif %}
+    </h1>
+
+    <p>Choose a language:</p>
+    <ul>
+        <li><a href="{{ url_for('set_language', lang='en') }}">English</a></li>
+        <li><a href="{{ url_for('set_language', lang='es') }}">Español</a></li>
+        <li><a href="{{ url_for('set_language', lang='fr') }}">Français</a></li>
+    </ul>
+</body>
+</html>

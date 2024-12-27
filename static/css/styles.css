@@ -1,0 +1,46 @@
+body {
+    background-image: url('images.jpg');
+    background-size: cover;           
+    background-position: center center; 
+    background-attachment: fixed;      
+    height: 100vh;                    
+    margin: 0;                        
+    font-family: Arial, sans-serif;   
+}
+
+.bg-primary {
+    background-color: rgba(112, 115, 117, 0.8);  
+}
+
+.navbar {
+    padding: 10px 20px;
+}
+
+ul.list-inline {
+    justify-content: center;
+}
+
+
+.btn-custom {
+    background-color: #ff9800;
+    color: white;
+    border: none;
+}
+
+.weather-box {
+    background: rgba(214, 200, 200, 0.7);
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.card {
+    border-radius: 10px;
+}
+
+.card-body {
+    padding: 15px;
+}
+
+.img-fluid {
+    max-width: 80%;
+}

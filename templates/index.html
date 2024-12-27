@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"> 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script> 
+</head>
+<body>
+    <section class="bg-custom py-3">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-8">
+                    <form class="d-flex" action="/" method="get">
+                        <input class="form-control form-control-lg" id="cityInput" type="text" name="city" value="{{ city }}" placeholder="Enter City Name" aria-label="City Name">
+                        <button class="btn btn-outline-warning ms-2" type="submit">Get Weather</button>
+                        <button class="btn btn-outline-danger ms-2" type="button" id="reloadBtn" onclick="reloadPage()">
+                            <i class="bi bi-arrow-clockwise"></i> Reload
+                        </button>
+                        <button class="btn btn-outline-warning ms-2" id="bookmarkBtn" onclick="bookmarkCity()">
+                            <i class="bi bi-star"></i> Bookmark
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container mt-4">
+        <div class="weather-box p-4 mt-3 border rounded shadow-sm">
+            {% if weather_data.error %}
+                <p class="text-danger">Error: {{ weather_data.error }}</p>
+            {% else %}
+                <h2 class="text-center mb-4">{{ weather_data.city }}, {{ weather_data.country }}</h2>
+
+                <div class="text-center mb-3">
+                    <img src="http://openweathermap.org/img/wn/{{ weather_data.icon }}@2x.png" class="img-fluid mb-2">
+                    <p class="fs-5">{{ weather_data.description | capitalize }}</p>
+                </div>
+
+                <div class="text-center mb-4">
+                    <p class="fs-2 fw-bold">{{ weather_data.temperature }}°C</p>
+                </div>
+
+                <div class="row mt-5 justify-content-center">
+                    <div class="col-12 text-center mb-4">
+                        <h4 class="text-center mb-4">5-Day Forecast</h4>
+                    </div>
+
+                    {% for day in weather_data.forecast %}
+                        <div class="col-12 col-md-2 mb-3">
+                            <div class="card text-center p-3 shadow-sm border-0">
+                                <img src="http://openweathermap.org/img/wn/{{ day.icon }}@2x.png" alt="Weather Icon" class="img-fluid mb-2">
+                                <div class="card-body p-2">
+                                    <p class="fw-bold">{{ day.date }}</p>
+                                    <p class="fs-5">{{ day.temp }} °C</p>
+                                    <p class="text-muted">{{ day.description | capitalize }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+
+    <script>
+        const apiKey = '38deafdd9f5461f328c1ff13ca2d9e6f';  
+        $(document).ready(function() {
+            $("#cityInput").autocomplete({
+                source: function(request, response) {
+                    $.ajax({
+                        url: `http://api.openweathermap.org/data/2.5/find`,
+                        dataType: "json",
+                        data: {
+                            q: request.term, 
+                            appid: apiKey,
+                            limit: 5, 
+                            lang: 'en',
+                        },
+                        success: function(data) {
+                            response(data.list.map(function(city) {
+                                return {
+                                    label: `${city.name}, ${city.sys.country}`,
+                                    value: city.name, 
+                                    country: city.sys.country,
+                                };
+                            }));
+                        }
+                    });
+                },
+                minLength: 3, 
+                select: function(event, ui) {
+                    $('#cityInput').val(ui.item.value);
+                }
+            });
+        });
+
+        function bookmarkCity() {
+            const city = document.querySelector('input[name="city"]').value;
+            
+            if (city) {
+                let bookmarkedCities = JSON.parse(localStorage.getItem('bookmarkedCities')) || [];
+                if (!bookmarkedCities.includes(city)) {
+                    bookmarkedCities.push(city);
+                    localStorage.setItem('bookmarkedCities', JSON.stringify(bookmarkedCities));
+                    alert(city + " has been bookmarked!");
+                } else {
+                    alert(city + " is already bookmarked.");
+                }
+            } else {
+                alert("Please enter a city name first.");
+            }
+        }
+
+        function reloadPage() {
+            document.querySelector('input[name="city"]').value = "";
+            location.reload();  
+        }
+    </script>
+</body>
+</html>
